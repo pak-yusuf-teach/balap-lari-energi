@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BALAP ENERGI - IPAS Kelas 3 SD</title>
+    <!-- Tailwind CSS for modern styling and layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Poppins for rounded child-friendly typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Fredoka', 'Poppins', sans-serif;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(13, 148, 136, 0.85) 50%, rgba(245, 158, 11, 0.85) 100%), 
+                        url('https://imgur.com/a/bJBSMQs.png') no-repeat center center fixed;
+            background-size: cover;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 16:9 Landscape Aspect Ratio Container Guard */
+        .landscape-container {
+            width: 100vw;
+            height: 100vh;
+            max-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        @keyframes bounce-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .animate-bounce-gentle {
+            animation: bounce-gentle 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(251, 191, 36, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(251, 191, 36, 0.9); }
+        }
+
+        .pulse-card {
+            animation: pulse-glow 3s infinite;
+        }
+
+        /* Custom scrollbar for safe overflow handling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .text-shadow-lg {
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+        }
+        .text-shadow-sm {
+            text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex items-center justify-center">
+
+    <div id="app" class="landscape-container bg-slate-950/50 backdrop-blur-md shadow-2xl relative overflow-hidden">
+        
+        <!-- Top Navigation Bar / Audio Control Overlay -->
+        <header class="absolute top-4 right-4 z-50 flex items-center gap-3">
+            <button id="audio-toggle-btn" onclick="toggleAudio()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-4 py-2 rounded-2xl shadow-lg border-2 border-amber-600 flex items-center gap-2 transition-transform active:scale-95 text-lg cursor-pointer">
+                <span id="audio-icon">🔊</span> <span id="audio-text">Suara ON</span>
+            </button>
+        </header>
+
+        <!-- 1. LOADING PAGE -->
+        <section id="page-loading" class="flex flex-col items-center justify-center h-full w-full p-6 text-center">
+            <div class="mb-6 animate-bounce-gentle">
+                <div class="text-7xl mb-2">🏃⚡☀️</div>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-extrabold text-amber-300 text-shadow-lg mb-2">BALAP ENERGI</h1>
+            <p class="text-2xl md:text-3xl font-semibold text-cyan-200 text-shadow-sm mb-8">“Jawab Benar, Lari Lebih Cepat!”</p>
+            
+            <div class="w-80 bg-white/20 h-6 rounded-full overflow-hidden p-1 border-2 border-white/40 mb-4">
+                <div id="loading-bar" class="bg-gradient-to-r from-amber-400 to-emerald-400 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p id="loading-text" class="text-lg font-medium text-slate-200">Menyiapkan lintasan energi...</p>
+        </section>
+
+        <!-- 2. MAIN MENU -->
+        <section id="page-menu" class="hidden flex flex-col items-center justify-center h-full w-full p-6 text-center">
+            <div class="mb-4">
+                <span class="text-6xl">🌟🏃⚡</span>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-black text-amber-300 text-shadow-lg mb-2">BALAP ENERGI</h1>
+            <p class="text-xl md:text-2xl font-bold text-cyan-200 text-shadow-sm mb-8">IPAS Kelas 3 SD - Energi & Sumber Energi</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl w-full">
+                <button onclick="navigate('learning-goals')" class="bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xl py-4 px-6 rounded-3xl shadow-xl border-b-4 border-emerald-700 transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-3 cursor-pointer">
+                    🎯 TUJUAN PEMBELAJARAN
+                </button>
+                <button onclick="navigate('instructions')" class="bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-xl py-4 px-6 rounded-3xl shadow-xl border-b-4 border-cyan-700 transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-3 cursor-pointer">
+                    📖 PETUNJUK GAME
+                </button>
+                <button onclick="navigate('select-mode')" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold text-2xl py-5 px-6 rounded-3xl shadow-xl border-b-4 border-amber-700 transition-all transform hover:-translate-y-1 active:translate-y-0 col-span-1 sm:col-span-2 flex items-center justify-center gap-3 pulse-card cursor-pointer">
+                    🏁 MULAI BERMAIN
+                </button>
+                <button onclick="showLeaderboard()" class="bg-purple-500 hover:bg-purple-400 text-white font-bold text-xl py-3 px-6 rounded-3xl shadow-xl border-b-4 border-purple-700 transition-all transform hover:-translate-y-1 active:translate-y-0 col-span-1 sm:col-span-2 flex items-center justify-center gap-3 cursor-pointer">
+                    🏆 PAPAN SKOR
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. LEARNING GOALS PAGE -->
+        <section id="page-learning-goals" class="hidden flex flex-col justify-between h-full w-full p-6 md:p-10">
+            <div class="text-center">
+                <h2 class="text-4xl font-black text-amber-300 text-shadow-lg mb-2">🎯 TUJUAN PEMBELAJARAN</h2>
+                <p class="text-lg text-cyan-200">Setelah bermain game ini, kamu diharapkan mampu:</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-auto max-w-5xl mx-auto w-full">
+                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border-2 border-white/20 flex items-start gap-3">
+                    <span class="text-3xl">☀️️</span>
+                    <p class="text-base font-semibold">Mengenal dan menjelaskan pengertian energi dengan bahasa sederhana.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border-2 border-white/20 flex items-start gap-3">
+                    <span class="text-3xl">💧</span>
+                    <p class="text-base font-semibold">Menyebutkan berbagai sumber energi di sekitar kita (Matahari, air, angin, dll).</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border-2 border-white/20 flex items-start gap-3">
+                    <span class="text-3xl">💡</span>
+                    <p class="text-base font-semibold">Mengenal berbagai bentuk energi seperti panas, cahaya, bunyi, dan gerak.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border-2 border-white/20 flex items-start gap-3">
+                    <span class="text-3xl">⚡</span>
+                    <p class="text-base font-semibold">Menjelaskan contoh perubahan energi dalam kehidupan sehari-hari.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border-2 border-white/20 flex items-start gap-3">
+                    <span class="text-3xl">🍎</span>
+                    <p class="text-base font-semibold">Menjelaskan manfaat energi bagi manusia dan makhluk hidup.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border-2 border-white/20 flex items-start gap-3">
+                    <span class="text-3xl">🔋</span>
+                    <p class="text-base font-semibold">Menunjukkan perilaku menggunakan energi secara hemat dan bijak.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center max-w-5xl mx-auto w-full">
+                <button onclick="navigate('menu')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-lg py-3 px-8 rounded-2xl shadow-lg border-b-4 border-slate-900 transition-all cursor-pointer">
+                    ← KEMBALI
+                </button>
+                <button onclick="navigate('instructions')" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold text-lg py-3 px-8 rounded-2xl shadow-lg border-b-4 border-amber-700 transition-all cursor-pointer">
+                    LANJUT →
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. INSTRUCTIONS PAGE -->
+        <section id="page-instructions" class="hidden flex flex-col justify-between h-full w-full p-6 md:p-10">
+            <div class="text-center">
+                <h2 class="text-4xl font-black text-amber-300 text-shadow-lg mb-2">📖 CARA BERMAIN</h2>
+                <p class="text-lg text-cyan-200">Ikuti aturan seru balap energi berikut ini!</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 my-auto max-w-5xl mx-auto w-full">
+                <div class="bg-white/10 p-4 rounded-2xl border border-white/20 text-center">
+                    <div class="text-3xl mb-2">👥</div>
+                    <h3 class="font-bold text-amber-300">1. Pilih Mode</h3>
+                    <p class="text-sm mt-1">Pilih Mode 1 VS 1 atau 4 Pemain.</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-2xl border border-white/20 text-center">
+                    <div class="text-3xl mb-2">👤</div>
+                    <h3 class="font-bold text-amber-300">2. Nama & Karakter</h3>
+                    <p class="text-sm mt-1">Masukkan nama dan pilih pelari hebatmu.</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-2xl border border-white/20 text-center">
+                    <div class="text-3xl mb-2">❓</div>
+                    <h3 class="font-bold text-amber-300">3. Jawab 10 Soal</h3>
+                    <p class="text-sm mt-1">Setiap pemain menjawab 10 soal energi.</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-2xl border border-white/20 text-center">
+                    <div class="text-3xl mb-2">🏁</div>
+                    <h3 class="font-bold text-amber-300">4. Maju & Juara</h3>
+                    <p class="text-sm mt-1">Benar (+10 poin) → Maju 1 segmen ke FINISH!</p>
+                </div>
+            </div>
+
+            <div class="bg-amber-500/20 border-2 border-amber-400 p-4 rounded-2xl text-center max-w-xl mx-auto w-full">
+                <p class="text-lg font-bold text-amber-300">“Kalau salah, jangan menyerah. Tetap semangat!” 💪</p>
+            </div>
+
+            <div class="flex justify-between items-center max-w-5xl mx-auto w-full">
+                <button onclick="navigate('learning-goals')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-lg py-3 px-8 rounded-2xl shadow-lg border-b-4 border-slate-900 transition-all cursor-pointer">
+                    ← KEMBALI
+                </button>
+                <button onclick="navigate('select-mode')" class="bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-lg py-3 px-8 rounded-2xl shadow-lg border-b-4 border-emerald-700 transition-all cursor-pointer">
+                    SAYA SIAP! 🚀
+                </button>
+            </div>
+        </section>
+
+        <!-- 5. SELECT MODE PAGE -->
+        <section id="page-select-mode" class="hidden flex flex-col justify-between h-full w-full p-6 md:p-10">
+            <div class="text-center">
+                <h2 class="text-4xl font-black text-amber-300 text-shadow-lg mb-2">🏁 PILIH MODE BALAP</h2>
+                <p class="text-lg text-cyan-200">Mau balapan seru bersama siapa hari ini?</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto max-w-4xl mx-auto w-full">
+                <div onclick="selectGameMode('duel')" id="card-mode-duel" class="bg-white/10 hover:bg-white/20 border-4 border-cyan-400 p-8 rounded-3xl cursor-pointer transition-all transform hover:scale-105 text-center flex flex-col items-center justify-center shadow-2xl">
+                    <div class="text-6xl mb-4">🏃🏃</div>
+                    <h3 class="text-3xl font-extrabold text-cyan-300 mb-2">MODE DUEL</h3>
+                    <p class="text-2xl font-bold mb-4">1 VS 1</p>
+                    <p class="text-slate-300">Balapan seru beradu cepat melawan 1 teman sebangku!</p>
+                </div>
+
+                <div onclick="selectGameMode('four')" id="card-mode-four" class="bg-white/10 hover:bg-white/20 border-4 border-amber-400 p-8 rounded-3xl cursor-pointer transition-all transform hover:scale-105 text-center flex flex-col items-center justify-center shadow-2xl">
+                    <div class="text-6xl mb-4">🏃🏃🏃🏃</div>
+                    <h3 class="text-3xl font-extrabold text-amber-300 mb-2">MODE RAMAI</h3>
+                    <p class="text-2xl font-bold mb-4">4 PEMAIN</p>
+                    <p class="text-slate-300">Balapan seru 4 orang berjajar horizontal secara adil tanpa berebut!</p>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center max-w-4xl mx-auto w-full">
+                <button onclick="navigate('menu')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-lg py-3 px-8 rounded-2xl shadow-lg border-b-4 border-slate-900 transition-all cursor-pointer">
+                    ← KEMBALI
+                </button>
+                <button onclick="proceedToRegistration()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold text-xl py-3 px-10 rounded-2xl shadow-lg border-b-4 border-amber-700 transition-all cursor-pointer">
+                    LANJUT REGISTRASI →
+                </button>
+            </div>
+        </section>
+
+        <!-- 6. REGISTRATION PAGE -->
+        <section id="page-registration" class="hidden flex flex-col justify-between h-full w-full p-4 md:p-8 overflow-y-auto">
+            <div class="text-center mb-2">
+                <h2 class="text-3xl font-black text-amber-300 text-shadow-lg">👤 SIAPA YANG AKAN BALAP?</h2>
+                <p class="text-sm text-cyan-200">Masukkan nama jagoan pelari energi!</p>
+            </div>
+
+            <div id="player-inputs-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-auto max-w-6xl mx-auto w-full">
+                <!-- Dynamically populated by JS depending on mode -->
+            </div>
+
+            <div class="flex justify-between items-center max-w-6xl mx-auto w-full mt-4">
+                <button onclick="navigate('select-mode')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-base py-2.5 px-6 rounded-2xl shadow-lg border-b-4 border-slate-900 cursor-pointer">
+                    ← KEMBALI
+                </button>
+                <button onclick="startCountdown()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xl py-3 px-10 rounded-2xl shadow-2xl border-b-4 border-emerald-700 animate-bounce-gentle cursor-pointer">
+                    🏁 MULAI BALAP!
+                </button>
+            </div>
+        </section>
+
+        <!-- 7. COUNTDOWN PAGE -->
+        <section id="page-countdown" class="hidden flex flex-col items-center justify-center h-full w-full p-6 text-center">
+            <h2 class="text-3xl font-bold text-cyan-200 mb-4">Bersiap di Garis START...</h2>
+            <div id="countdown-number" class="text-9xl font-black text-amber-300 text-shadow-lg animate-bounce-gentle">3</div>
+            <p class="text-xl text-slate-300 mt-6">Tangan di atas tombol, konsentrasi penuh!</p>
+        </section>
+
+        <!-- 8. GAMEPLAY PAGE (16:9 Landscape - Top: Tracks, Bottom: Question Panels) -->
+        <section id="page-gameplay" class="hidden flex flex-col h-full w-full p-3 justify-between overflow-hidden">
+            <!-- TOP SECTION: TRACKS & CHECKPOINTS (~40-45% height) -->
+            <div id="race-tracks-container" class="bg-slate-900/70 border-2 border-white/20 rounded-2xl p-3 flex flex-col justify-around relative shadow-inner overflow-hidden">
+                <!-- Injected dynamically for Duel or 4-Player -->
+            </div>
+
+            <!-- BOTTOM SECTION: QUESTION PANELS HORIZONTAL -->
+            <div id="question-panels-container" class="grid gap-3 w-full mt-2 flex-grow overflow-hidden">
+                <!-- Injected dynamically: 2 columns for 1v1, 4 columns for 4-player horizontal -->
+            </div>
+        </section>
+
+        <!-- 9. RESULTS PAGE -->
+        <section id="page-results" class="hidden flex flex-col justify-between h-full w-full p-6 overflow-y-auto">
+            <div class="text-center">
+                <h2 class="text-4xl font-black text-amber-300 text-shadow-lg mb-1">🏁 BALAP SELESAI!</h2>
+                <p class="text-lg text-cyan-200">Hebat! Kalian sudah belajar tentang energi dengan penuh semangat.</p>
+            </div>
+
+            <div id="results-podium-container" class="max-w-4xl mx-auto w-full my-auto space-y-3">
+                <!-- Podium & List of results with badges -->
+            </div>
+
+            <div class="flex flex-wrap justify-center items-center gap-4 max-w-4xl mx-auto w-full mt-4">
+                <button onclick="restartGame()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold text-lg py-3 px-8 rounded-2xl shadow-xl border-b-4 border-amber-700 cursor-pointer">
+                    🔄 MAIN LAGI
+                </button>
+                <button onclick="navigate('menu')" class="bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-lg py-3 px-8 rounded-2xl shadow-xl border-b-4 border-emerald-700 cursor-pointer">
+                    🏠 MENU UTAMA
+                </button>
+                <button onclick="showLeaderboard()" class="bg-purple-500 hover:bg-purple-400 text-white font-extrabold text-lg py-3 px-8 rounded-2xl shadow-xl border-b-4 border-purple-700 cursor-pointer">
+                    🏆 PAPAN SKOR
+                </button>
+            </div>
+        </section>
+
+        <!-- 10. LEADERBOARD PAGE -->
+        <section id="page-leaderboard" class="hidden flex flex-col justify-between h-full w-full p-6 overflow-y-auto">
+            <div class="text-center">
+                <h2 class="text-4xl font-black text-amber-300 text-shadow-lg mb-1">🏆 PAPAN SKOR BALAP ENERGI</h2>
+                <p class="text-lg text-cyan-200">Daftar juara pelari energi hebat sepanjang masa!</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto w-full my-auto bg-white/10 backdrop-blur-md rounded-3xl border-2 border-white/20 p-6 shadow-2xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b-2 border-white/20 text-amber-300">
+                                <th class="py-3 px-4">🏆 Peringkat</th>
+                                <th class="py-3 px-4">👤 Nama</th>
+                                <th class="py-3 px-4">⭐ Poin</th>
+                                <th class="py-3 px-4">✅ Benar</th>
+                                <th class="py-3 px-4">🎖️ Badge</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-table-body">
+                            <!-- Populated from localStorage -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="flex justify-center max-w-3xl mx-auto w-full">
+                <button onclick="navigate('menu')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-lg py-3 px-10 rounded-2xl shadow-lg border-b-4 border-slate-900 cursor-pointer">
+                    ← KEMBALI KE MENU
+                </button>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        let gameState = {
+            mode: 'duel', // 'duel' or 'four'
+            audioEnabled: true,
+            players: [], // Array of player objects
+            currentQuestionIndex: 0,
+            timerInterval: null
+        };
+
+        // Comprehensive IPAS Grade 3 Energy Question Bank
+        const questionBank = [
+            {
+                q: "Apa yang dimaksud dengan energi?",
+                options: [
+                    "Kemampuan untuk melakukan kegiatan atau kerja",
+                    "Nama sebuah benda keras",
+                    "Warna warni pada lampu",
+                    "Bentuk hiasan ruangan"
+                ],
+                answer: 0,
+                checkpointIcon: "☀️"
+            },
+            {
+                q: "Sumber energi terbesar bagi bumi kita adalah...",
+                options: ["Batu bata", "Matahari", "Pasir pantai", "Tanah liat"],
+                answer: 1,
+                checkpointIcon: "☀️"
+            },
+            {
+                q: "Ketika lampu belajar menyala, energi listrik berubah menjadi energi...",
+                options: ["Gerak dan bunyi", "Makanan dan air", "Cahaya dan panas", "Angin dan udara"],
+                answer: 2,
+                checkpointIcon: "💡"
+            },
+            {
+                q: "Kipas angin di rumah mengubah energi listrik menjadi energi...",
+                options: ["Gerak", "Cahaya terang", "Panas api", "Bunyi keras"],
+                answer: 0,
+                checkpointIcon: "💨"
+            },
+            {
+                q: "Sumber energi utama bagi tubuh manusia agar bertenaga adalah...",
+                options: ["Batu es", "Makanan dan minuman", "Plastik", "Kaca"],
+                answer: 1,
+                checkpointIcon: "🍎"
+            },
+            {
+                q: "Alat rumah tangga yang menggunakan energi baterai untuk menyala di tempat gelap adalah...",
+                options: ["Senter", "Kulkas besar", "Kompor gas", "Mesin cuci"],
+                answer: 0,
+                checkpointIcon: "🔋"
+            },
+            {
+                q: "Perilaku hemat energi yang benar di rumah adalah...",
+                options: [
+                    "Membiarkan televisi menyala walau tidak ditonton",
+                    "Menyalakan semua lampu di siang hari",
+                    "Mematikan lampu kamar saat sudah tidur",
+                    "Membuka kulkas terus-menerus"
+                ],
+                answer: 2,
+                checkpointIcon: "💡"
+            },
+            {
+                q: "Kincir angin mainan dapat berputar karena memanfaatkan sumber energi...",
+                options: ["Air mengalir", "Angin (udara bergerak)", "Minyak tanah", "Batu bara"],
+                answer: 1,
+                checkpointIcon: "💨"
+            },
+            {
+                q: "Energi panas matahari sangat bermanfaat bagi kehidupan sehari-hari, contohnya untuk...",
+                options: ["Menyalakan televisi", "Menjemur pakaian agar kering", "Membuat es batu", "Menyalakan kipas angin"],
+                answer: 1,
+                checkpointIcon: "☀️"
+            },
+            {
+                q: "Alat musik gitar yang dipetik akan menghasilkan bentuk energi...",
+                options: ["Bunyi", "Cahaya", "Listrik", "Panas"],
+                answer: 0,
+                checkpointIcon: "🎵"
+            },
+            {
+                q: "Makanan yang kita makan diolah oleh tubuh menjadi...",
+                options: ["Bahan bakar kendaraan", "Energi untuk beraktivitas", "Listrik rumah", "Cahaya lampu"],
+                answer: 1,
+                checkpointIcon: "🍎"
+            },
+            {
+                q: "Pembangkit Listrik Tenaga Air (PLTA) memanfaatkan aliran air untuk menghasilkan...",
+                options: ["Energi listrik", "Energi panas", "Makanan ikan", "Angin kencang"],
+                answer: 0,
+                checkpointIcon: "💧"
+            }
+        ];
+
+        // Web Audio API Sound Synthesizer (No external audio files needed)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (!gameState.audioEnabled) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            let now = audioCtx.currentTime;
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.linearRampToValueAtTime(120, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'checkpoint') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.1);
+                osc.frequency.setValueAtTime(783.99, now + 0.2);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'finish') {
+                osc.type = 'sine';
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    let timeOffset = now + idx * 0.12;
+                    let o = audioCtx.createOscillator();
+                    let g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.frequency.setValueAtTime(freq, timeOffset);
+                    g.gain.setValueAtTime(0.25, timeOffset);
+                    g.gain.exponentialRampToValueAtTime(0.01, timeOffset + 0.3);
+                    o.start(timeOffset);
+                    o.stop(timeOffset + 0.3);
+                });
+            }
+        }
+
+        function toggleAudio() {
+            gameState.audioEnabled = !gameState.audioEnabled;
+            document.getElementById('audio-icon').innerText = gameState.audioEnabled ? '🔊' : '🔇';
+            document.getElementById('audio-text').innerText = gameState.audioEnabled ? 'Suara ON' : 'Suara OFF';
+        }
+
+        // Navigation Controller
+        function navigate(pageId) {
+            const pages = ['loading', 'menu', 'learning-goals', 'instructions', 'select-mode', 'registration', 'countdown', 'gameplay', 'results', 'leaderboard'];
+            pages.forEach(p => {
+                const el = document.getElementById(`page-${p}`);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(`page-${pageId}`);
+            if (target) target.classList.remove('hidden');
+        }
+
+        window.onload = function() {
+            let progress = 0;
+            const bar = document.getElementById('loading-bar');
+            const txt = document.getElementById('loading-text');
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => navigate('menu'), 500);
+                }
+                bar.style.width = progress + '%';
+                if (progress > 50) txt.innerText = "Hampir siap, menyusun soal energi...";
+            }, 250);
+        };
+
+        // Mode Selection
+        function selectGameMode(mode) {
+            gameState.mode = mode;
+            const duelCard = document.getElementById('card-mode-duel');
+            const fourCard = document.getElementById('card-mode-four');
+            if (mode === 'duel') {
+                duelCard.className = "bg-cyan-600/40 border-4 border-cyan-300 p-8 rounded-3xl cursor-pointer transition-all transform scale-105 text-center flex flex-col items-center justify-center shadow-2xl pulse-card";
+                fourCard.className = "bg-white/10 hover:bg-white/20 border-4 border-amber-400 p-8 rounded-3xl cursor-pointer transition-all transform hover:scale-105 text-center flex flex-col items-center justify-center shadow-2xl";
+            } else {
+                fourCard.className = "bg-amber-600/40 border-4 border-amber-300 p-8 rounded-3xl cursor-pointer transition-all transform scale-105 text-center flex flex-col items-center justify-center shadow-2xl pulse-card";
+                duelCard.className = "bg-white/10 hover:bg-white/20 border-4 border-cyan-400 p-8 rounded-3xl cursor-pointer transition-all transform hover:scale-105 text-center flex flex-col items-center justify-center shadow-2xl";
+            }
+        }
+
+        function proceedToRegistration() {
+            const container = document.getElementById('player-inputs-container');
+            container.innerHTML = '';
+            const count = gameState.mode === 'duel' ? 2 : 4;
+            const defaultNames = ['Zahra', 'Bagas', 'Syafira', 'Jibril'];
+            const colors = ['bg-cyan-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500'];
+            const icons = ['🏃‍♀️', '🏃‍♂️', '⚡', '🌟'];
+
+            for (let i = 0; i < count; i++) {
+                container.innerHTML += `
+                    <div class="bg-white/15 backdrop-blur-md p-4 rounded-3xl border-2 border-white/30 flex flex-col items-center shadow-lg">
+                        <div class="w-14 h-14 rounded-2xl ${colors[i]} flex items-center justify-center text-3xl shadow-md mb-2">
+                            ${icons[i]}
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-amber-200">PEMAIN ${i + 1}</h3>
+                        <input type="text" id="player-name-${i}" value="${defaultNames[i]}" placeholder="Nama Pemain ${i + 1}" class="w-full bg-slate-900/60 border-2 border-white/30 rounded-xl px-4 py-2 text-center font-bold text-white focus:outline-none focus:border-amber-400 text-base" maxlength="12">
+                    </div>
+                `;
+            }
+            navigate('registration');
+        }
+
+        function startCountdown() {
+            const count = gameState.mode === 'duel' ? 2 : 4;
+            gameState.players = [];
+
+            for (let i = 0; i < count; i++) {
+                const nameInput = document.getElementById(`player-name-${i}`).value.trim();
+                const playerName = nameInput !== '' ? nameInput : `Pemain ${i + 1}`;
+                
+                // Shuffle 10 questions for each player independently
+                let shuffledQuestions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, 10);
+                
+                gameState.players.push({
+                    id: i + 1,
+                    name: playerName,
+                    score: 0,
+                    position: 0, // 0 to 10 segments
+                    correctCount: 0,
+                    currentQIndex: 0,
+                    questions: shuffledQuestions,
+                    color: ['bg-cyan-400', 'bg-emerald-400', 'bg-amber-400', 'bg-purple-400'][i],
+                    badge: ''
+                });
+            }
+
+            navigate('countdown');
+            let countVal = 3;
+            const countEl = document.getElementById('countdown-number');
+            countEl.innerText = countVal;
+            playSound('checkpoint');
+
+            const timer = setInterval(() => {
+                countVal--;
+                if (countVal > 0) {
+                    countEl.innerText = countVal;
+                    playSound('checkpoint');
+                } else if (countVal === 0) {
+                    countEl.innerText = "MULAI! 🏁";
+                    playSound('finish');
+                } else {
+                    clearInterval(timer);
+                    initGameplay();
+                }
+            }, 1000);
+        }
+
+        function initGameplay() {
+            navigate('gameplay');
+            renderTracks();
+            renderQuestionPanels();
+        }
+
+        function renderTracks() {
+            const container = document.getElementById('race-tracks-container');
+            container.innerHTML = `<div class="flex justify-between text-xs font-bold text-amber-300 px-2 uppercase tracking-widest"><span>START 🚀</span><span>Checkpoint (1-9)</span><span>FINISH 🏁</span></div>`;
+
+            gameState.players.forEach((p, idx) => {
+                let progressPercent = Math.min((p.position / 10) * 88 + 2, 92);
+                container.innerHTML += `
+                    <div class="relative w-full bg-slate-900/80 rounded-xl h-10 flex items-center px-3 border border-white/20 my-1">
+                        <div class="absolute inset-y-0 left-0 border-r-2 border-dashed border-white/30" style="left: ${progressPercent}%"></div>
+                        <div class="flex items-center justify-between w-full z-10 text-xs font-bold">
+                            <span class="bg-slate-800 px-2 py-0.5 rounded-lg border border-white/20 text-cyan-200">🏃 ${p.name}</span>
+                            <span class="text-amber-300">Segmen ${p.position}/10</span>
+                        </div>
+                        <div class="absolute transition-all duration-500 text-2xl" style="left: ${progressPercent}%; top: 2px;">
+                            🏃
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderQuestionPanels() {
+            const container = document.getElementById('question-panels-container');
+            const isFour = gameState.mode === 'four';
+            
+            container.className = isFour 
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full mt-2 flex-grow overflow-hidden" 
+                : "grid grid-cols-1 sm:grid-cols-2 gap-3 w-full mt-2 flex-grow overflow-hidden";
+
+            container.innerHTML = '';
+
+            gameState.players.forEach((p, idx) => {
+                // Safe check if player has finished or current question index is out of bounds
+                if (p.position >= 10 || p.currentQIndex >= p.questions.length || !p.questions[p.currentQIndex]) {
+                    container.innerHTML += `
+                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 border-2 border-emerald-400 flex flex-col justify-center items-center text-center shadow-lg">
+                            <div class="text-4xl mb-2">🎉</div>
+                            <h3 class="font-extrabold text-amber-300 text-lg">${p.name}</h3>
+                            <p class="text-emerald-300 font-bold text-sm my-2">SUDAH FINISH! 🏁</p>
+                            <p class="text-xs text-slate-300">Skor: ${p.score} ⭐ | Benar: ${p.correctCount}/${p.questions.length}</p>
+                        </div>
+                    `;
+                } else {
+                    let qData = p.questions[p.currentQIndex];
+                    let progressBarWidth = (p.currentQIndex / p.questions.length) * 100;
+                    
+                    let optionsHtml = '';
+                    qData.options.forEach((opt, oIdx) => {
+                        optionsHtml += `
+                            <button onclick="submitAnswer(${idx}, ${oIdx})" class="w-full bg-slate-800/90 hover:bg-slate-700 text-white font-semibold text-xs md:text-sm py-2 px-3 rounded-xl border border-white/20 transition-all text-left flex items-center gap-2 active:scale-95 cursor-pointer">
+                                <span class="bg-amber-500 text-slate-900 rounded-lg w-5 h-5 flex items-center justify-center font-bold text-xs flex-shrink-0">${['A','B','C','D'][oIdx]}</span>
+                                <span class="truncate">${opt}</span>
+                            </button>
+                        `;
+                    });
+
+                    container.innerHTML += `
+                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 border-2 border-white/20 flex flex-col justify-between shadow-lg overflow-y-auto">
+                            <div>
+                                <div class="flex justify-between items-center mb-1 text-xs font-bold">
+                                    <span class="text-amber-300 truncate">👤 ${p.name}</span>
+                                    <span class="bg-amber-500/30 text-amber-200 px-2 py-0.5 rounded-md border border-amber-400/30">⭐ ${p.score}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-[11px] text-cyan-200 mb-1">
+                                    <span>Soal ${p.currentQIndex + 1}/${p.questions.length}</span>
+                                    <span>Benar: ${p.correctCount}/${p.questions.length}</span>
+                                </div>
+                                <div class="w-full bg-black/30 h-1.5 rounded-full overflow-hidden mb-2">
+                                    <div class="bg-emerald-400 h-full rounded-full transition-all" style="width: ${progressBarWidth}%"></div>
+                                </div>
+                                <p class="text-xs md:text-sm font-bold text-white mb-2 leading-snug">${qData.q}</p>
+                            </div>
+                            <div class="space-y-1.5 mt-auto">
+                                ${optionsHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            if (gameState.players.every(p => p.position >= 10 || p.currentQIndex >= p.questions.length)) {
+                setTimeout(showResults, 1200);
+            }
+        }
+
+        function submitAnswer(playerIdx, selectedOption) {
+            let p = gameState.players[playerIdx];
+            if (p.position >= 10 || p.currentQIndex >= p.questions.length) return;
+
+            let qData = p.questions[p.currentQIndex];
+            if (!qData) return;
+
+            let isCorrect = (selectedOption === qData.answer);
+
+            if (isCorrect) {
+                p.score += 10;
+                p.correctCount += 1;
+                p.position = Math.min(p.position + 1, 10);
+                playSound('correct');
+                if (p.position > 0 && p.position < 10) {
+                    playSound('checkpoint');
+                }
+            } else {
+                playSound('wrong');
+            }
+
+            p.currentQIndex += 1;
+
+            renderTracks();
+            renderQuestionPanels();
+
+            if (gameState.players.every(pl => pl.position >= 10 || pl.currentQIndex >= pl.questions.length)) {
+                setTimeout(showResults, 1000);
+            }
+        }
+
+        function showResults() {
+            playSound('finish');
+            navigate('results');
+
+            let sorted = [...gameState.players].sort((a, b) => b.score - a.score || b.correctCount - a.correctCount);
+
+            const container = document.getElementById('results-podium-container');
+            container.innerHTML = '';
+
+            sorted.forEach((p, idx) => {
+                let badge = "🏃 Pelari Tangguh";
+                if (p.score === 100) badge = "🏆 Juara Balap & Ahli Energi";
+                else if (p.correctCount >= 8) badge = "💡 Pintar Energi";
+                else if (p.correctCount >= 6) badge = "☀️ Sahabat Matahari";
+                else badge = "🔋 Pemburu Poin";
+                
+                p.badge = badge;
+
+                let medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "⭐";
+
+                container.innerHTML += `
+                    <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border-2 border-white/20 flex items-center justify-between shadow-xl">
+                        <div class="flex items-center gap-4">
+                            <span class="text-3xl">${medal}</span>
+                            <div>
+                                <h3 class="font-extrabold text-lg text-amber-300">${p.name}</h3>
+                                <p class="text-xs text-cyan-200">${badge}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xl font-black text-amber-400">⭐ ${p.score} Poin</p>
+                            <p class="text-xs text-slate-300">Benar: ${p.correctCount}/10</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            saveToLeaderboard(sorted);
+        }
+
+        function saveToLeaderboard(sortedPlayers) {
+            let existing = JSON.parse(localStorage.getItem('balap_energi_leaderboard') || '[]');
+            sortedPlayers.forEach(p => {
+                existing.push({
+                    name: p.name,
+                    score: p.score,
+                    correct: p.correctCount,
+                    badge: p.badge,
+                    date: new Date().toLocaleDateString()
+                });
+            });
+            existing.sort((a, b) => b.score - a.score || b.correct - a.correct);
+            existing = existing.slice(0, 15);
+            localStorage.setItem('balap_energi_leaderboard', JSON.stringify(existing));
+        }
+
+        function showLeaderboard() {
+            navigate('leaderboard');
+            let existing = JSON.parse(localStorage.getItem('balap_energi_leaderboard') || '[]');
+            const tbody = document.getElementById('leaderboard-table-body');
+            tbody.innerHTML = '';
+
+            if (existing.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">Belum ada data skor tersimpan. Ayo mainkan gamenya sekarang!</td></tr>`;
+                return;
+            }
+
+            existing.forEach((item, idx) => {
+                let medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
+                tbody.innerHTML += `
+                    <tr class="border-b border-white/10 hover:bg-white/5">
+                        <td class="py-3 px-4 font-bold text-amber-300">${medal}</td>
+                        <td class="py-3 px-4 font-bold">${item.name}</td>
+                        <td class="py-3 px-4 text-amber-400 font-extrabold">⭐ ${item.score}</td>
+                        <td class="py-3 px-4">${item.correct}/10</td>
+                        <td class="py-3 px-4">${item.badge}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function restartGame() {
+            navigate('select-mode');
+        }
+    </script>
+</body>
+</html>
